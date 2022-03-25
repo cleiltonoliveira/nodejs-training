@@ -3,20 +3,23 @@ import books from "../models/Book.js";
 class BookController {
 
     static listBooks = (req, res) => {
-        books.find((err, books) => {
+        books.find().populate('autor').exec((err, books) => {
             res.status(200).json(books)
         })
     }
 
     static listBookById = (req, res) => {
         const id = req.params.id;
-        books.findById(id, (err, book) => {
-            if (err) {
-                res.status(400).send({ message: `${err.message} - Book not found` })
-            } else {
-                res.status(200).send(book.toJSON())
-            }
-        })
+        books.findById(id)
+            .populate('autor', 'name')
+            .exec((err, books) => {
+                console.log(books)
+                if (err) {
+                    res.status(400).send({ message: `${err.message} - Book not found` })
+                } else {
+                    res.status(200).send(books)
+                }
+            })
     }
 
     static createBook = (req, res) => {
@@ -49,6 +52,13 @@ class BookController {
             } else {
                 res.status(500).send({ message: err.message })
             }
+        })
+    }
+
+    static listBookByEditora = (req, res) => {
+        const editora = req.query.editora;
+        books.find({ 'editora': editora }, {}, (err, books) => {
+            res.status(200).send(books);
         })
     }
 }

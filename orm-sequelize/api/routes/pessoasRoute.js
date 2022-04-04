@@ -17,5 +17,6 @@ router.get('/pessoas/:estudanteId/matricula/:matriculaId', PessoaController.find
 router.put('/pessoas/:estudanteId/matricula/:matriculaId', PessoaController.updateRegistration)
 router.delete('/pessoas/:estudanteId/matricula/:matriculaId', PessoaController.deleteRegistration)
 router.post('/pessoas/:estudanteId/matricula', PessoaController.createRegistration)
+router.post('/pessoas/:estudanteId/block', PessoaController.blockPerson)
 
 module.exports = router

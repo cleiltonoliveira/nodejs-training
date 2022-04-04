@@ -1,5 +1,5 @@
 const database = require('../models')
-const pessoas = require('../models/pessoas')
+const Sequelize = require('sequelize')
 
 class PessoaController {
     static async findAllActive(req, res) {
@@ -134,6 +134,42 @@ class PessoaController {
             const person = await database.Pessoas.findOne({ where: { id: Number(estudanteId) } })
             const registrations = await person.getAulasMatriculadas()
             return res.status(200).json(registrations)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async findRegistrationsByClass(req, res) {
+        try {
+            const { turmaId } = req.params
+
+            const registrations = await database.Matriculas.findAndCountAll({
+                where: {
+                    turma_id: Number(turmaId),
+                    status: 'confirmado'
+                },
+                limit: 20,
+                order: [['estudante_id', 'DESC']]
+            })
+            return res.status(200).json(registrations)
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async findFulledClasses(req, res) {
+        try {
+            const maxRegistrationsNumber = 2;
+
+            const classes = await database.Matriculas.findAndCountAll({
+                where: {
+                    status: 'confirmado'
+                },
+                attributes: ['turma_id'],
+                group: ['turma_id'],
+                having: Sequelize.literal(`count(turma_id) >= ${maxRegistrationsNumber}`)
+            })
+            return res.status(200).json(classes.count)
         } catch (error) {
             return res.status(500).json(error.message)
         }

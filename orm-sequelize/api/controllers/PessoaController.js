@@ -1,4 +1,5 @@
 const database = require('../models')
+const pessoas = require('../models/pessoas')
 
 class PessoaController {
     static async findAllActive(req, res) {
@@ -122,6 +123,17 @@ class PessoaController {
             const { estudanteId, matriculaId } = req.params
             await database.Matriculas.destroy({ where: { id: Number(matriculaId), estudante_id: Number(estudanteId) } })
             return res.status(200).json({ message: `MatriculaId ${matriculaId} deleted` })
+        } catch (error) {
+            return res.status(500).json(error.message)
+        }
+    }
+
+    static async findRegistrations(req, res) {
+        try {
+            const { estudanteId } = req.params
+            const person = await database.Pessoas.findOne({ where: { id: Number(estudanteId) } })
+            const registrations = await person.getAulasMatriculadas()
+            return res.status(200).json(registrations)
         } catch (error) {
             return res.status(500).json(error.message)
         }

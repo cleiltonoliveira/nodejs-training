@@ -2,7 +2,7 @@ const postsDao = require('./posts-dao')
 const validacoes = require('../validacoes-comuns')
 
 class Post {
-  constructor (post) {
+  constructor(post) {
     this.id = post.id
     this.titulo = post.titulo
     this.conteudo = post.conteudo
@@ -10,11 +10,20 @@ class Post {
     this.valida()
   }
 
-  adiciona () {
+  adiciona() {
     return postsDao.adiciona(this)
   }
 
-  static async buscaPorId (id, idAutor) {
+  static async buscaPorId(id) {
+    const post = await postsDao.buscaPorId(id)
+    if (!post) {
+      return null
+    }
+
+    return new Post(post)
+  }
+
+  static async buscaPorIdAutor(id, idAutor) {
     const post = await postsDao.buscaPorId(id, idAutor)
     if (!post) {
       return null
@@ -23,7 +32,7 @@ class Post {
     return new Post(post)
   }
 
-  valida () {
+  valida() {
     validacoes.campoStringNaoNulo(this.titulo, 'titulo')
     validacoes.campoTamanhoMinimo(this.titulo, 'titulo', 5)
 
@@ -31,15 +40,15 @@ class Post {
     validacoes.campoTamanhoMaximo(this.conteudo, 'conteudo', 140)
   }
 
-  remover () {
+  remover() {
     return postsDao.remover(this)
   }
 
-  static listarPorAutor (idAutor) {
+  static listarPorAutor(idAutor) {
     return postsDao.listarPorAutor(idAutor)
   }
 
-  static listarTodos () {
+  static listarTodos() {
     return postsDao.listarTodos()
   }
 }

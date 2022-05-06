@@ -3,7 +3,7 @@ const Usuario = require('./usuarios-modelo')
 const tokens = require('./tokens')
 
 module.exports = {
-  local (req, res, next) {
+  local(req, res, next) {
     passport.authenticate(
       'local',
       { session: false },
@@ -21,12 +21,14 @@ module.exports = {
         }
 
         req.user = usuario
+
+        req.estaAutenticado = true
         return next()
       }
     )(req, res, next)
   },
 
-  bearer (req, res, next) {
+  bearer(req, res, next) {
     passport.authenticate(
       'bearer',
       { session: false },
@@ -51,12 +53,13 @@ module.exports = {
 
         req.token = info.token
         req.user = usuario
+        req.estaAutenticado = true
         return next()
       }
     )(req, res, next)
   },
 
-  async refresh (req, res, next) {
+  async refresh(req, res, next) {
     try {
       const { refreshToken } = req.body
       const id = await tokens.refresh.verifica(refreshToken)
@@ -71,7 +74,7 @@ module.exports = {
     }
   },
 
-  async verificacaoEmail (req, res, next) {
+  async verificacaoEmail(req, res, next) {
     try {
       const { token } = req.params
       const id = await tokens.verificacaoEmail.verifica(token)

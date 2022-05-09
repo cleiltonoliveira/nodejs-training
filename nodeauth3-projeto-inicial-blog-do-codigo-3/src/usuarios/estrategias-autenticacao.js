@@ -4,22 +4,22 @@ const BearerStrategy = require('passport-http-bearer').Strategy
 
 const Usuario = require('./usuarios-modelo')
 
-const { InvalidArgumentError } = require('../erros')
+const { UnauthorizedError } = require('../erros')
 
 const bcrypt = require('bcrypt')
 
 const tokens = require('./tokens')
 
-function verificaUsuario (usuario) {
+function verificaUsuario(usuario) {
   if (!usuario) {
-    throw new InvalidArgumentError('Não existe usuário com esse e-mail!')
+    throw new UnauthorizedError()
   }
 }
 
-async function verificaSenha (senha, senhaHash) {
+async function verificaSenha(senha, senhaHash) {
   const senhaValida = await bcrypt.compare(senha, senhaHash)
   if (!senhaValida) {
-    throw new InvalidArgumentError('E-mail ou senha inválidos!')
+    throw new UnauthorizedError()
   }
 }
 

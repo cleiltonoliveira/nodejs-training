@@ -22,7 +22,7 @@ module.exports = {
     try {
       let posts = await Post.listarTodos()
 
-      const conversor = new ConversorPost('json')
+      const conversor = new ConversorPost('json', req.acesso.todos.permitido ? req.acesso.todos.atributos : req.acesso.apenasSeu.atributos)
 
       if (!req.estaAutenticado) {
         posts = posts.map(post => {

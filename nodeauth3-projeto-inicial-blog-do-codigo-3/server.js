@@ -7,8 +7,15 @@ require('./database')
 require('./redis/blocklist-access-token')
 require('./redis/allowlist-refresh-token')
 
+app.use((req, res, next) => {
+    res.set({
+        'Content-Type': 'application/json'
+    })
+    next()
+})
+
 const routes = require('./rotas')
-const { InvalidArgumentError } = require('./src/erros')
+const { InvalidArgumentError, NotFoundError, UnauthorizedError } = require('./src/erros')
 routes(app)
 
 app.use((error, req, res, next) => {
@@ -28,7 +35,7 @@ app.use((error, req, res, next) => {
         status = 401
     }
 
-    resposta.status(status).json(corpo)
+    res.status(status).json(corpo)
 })
 
 app.listen(port, () => console.log('A API está funcionando!'))
